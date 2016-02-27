@@ -1,0 +1,47 @@
+<html>
+
+<head>
+  <title>Fabric stock update</title>
+
+  <style>
+    #fabricTable th {
+        text-align: left;
+    }
+    #fabricTable td {
+        padding-right: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Garment stock check</h1>
+
+  <form action="/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+  </form>
+  
+  <h1> Fabric Inventory </h1>
+
+  <table id="fabricTable">
+    <tr>
+      <th>Fabric</th>
+      <th>Color</th>
+      <th>Yards in stock</th>
+    </tr>
+    
+    {% for fsi in fabric_stock_infos %}
+    <tr>
+      <td> {{ fsi.fabric.name }} </td>
+      <td>{{ fsi.fabric.color }}</td>
+      <td> {{ fsi.yards}}</td>
+    </tr>
+    {% endfor %}
+    
+  </table>
+
+  
+</body>
+
+</html>

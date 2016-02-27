@@ -1,0 +1,12 @@
+from django.contrib import admin
+
+# Register your models here.
+
+from .models import Fabric, FabricStockInfo, FabricBolt, Garment, GarmentFabricUsage, GarmentProduction
+
+admin.site.register(Fabric)
+admin.site.register(FabricStockInfo)
+admin.site.register(Garment)
+admin.site.register(GarmentFabricUsage)
+admin.site.register(GarmentProduction)
+admin.site.register(FabricBolt)

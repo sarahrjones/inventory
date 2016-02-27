@@ -1,0 +1,14 @@
+#how many garments are being made with what fabric(s)?
+#multiply number of garments being made by GarmenetFabricUsage
+#output: a list of tuples of the form (Fabric, yards_needed)
+def compute_fabric_usage(self, quantity):
+    gfus = self.garmentfabricusage_set.all()
+    fabric_yards_used_tuples = []
+    for gfu in gfus:
+        fabric = gfu.fabric
+        yards_needed = gfu.yards_used * quantity
+        t = (farbic, yards_needed)
+        fabric_yards_used_tuples.append(t)
+        
+    return fabric_yards_used_tuples
+

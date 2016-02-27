@@ -1,0 +1,94 @@
+from django.db import models
+
+# Create your models here.
+
+class Fabric(models.Model):
+    name = models.CharField(max_length=100)
+    color = models.CharField(max_length=100)
+    weight_oz =  models.IntegerField(default=0)
+    width_in =  models.IntegerField(default=0)
+
+    def get_bolts_in_stock(self):
+        bolts_in_stock = []
+        fabric_stock_infos = self.fabricstockinfo_set.all()
+        for fabric_stock_info in fabric_stock_infos:
+            fabric_bolts = fabric_stock_info.fabricbolt_set.all()
+
+            
+    def compute_yards_used_instances(self, yards_used):
+        pass
+    
+    def __str__(self):
+        return self.color + ' ' + self.name
+
+
+class FabricStockInfo(models.Model):
+    fabric = models.ForeignKey('Fabric')
+    mill = models.CharField(max_length=100)
+    quality = models.CharField(max_length=100)
+    color_code = models.CharField(max_length=100)
+    price = models.IntegerField(default=0) 
+   
+    def __str__(self):
+        return str(self.fabric)
+
+class FabricBolt(models.Model):
+    fabric_stock_info = models.ForeignKey('FabricStockInfo')
+    yards = models.FloatField()
+
+    def compute_yards_used_instances(self, yards_used):
+        return int(self.yards / yards_used)
+
+    def __str__(self):
+        return str(self.fabric_stock_info) + '-' + str(self.yards)
+
+class Garment(models.Model):
+    style = models.CharField(max_length=10, default=0)
+    description = models.CharField(max_length=100, default = 'description')
+
+    
+    def compute_number_producable(self):
+        pass
+    
+    # how many garments are being made with what fabric(s)?  multiply
+    # number of garments being made by GarmenetFabricUsage output: a
+    # list of tuples of the form (Fabric, yards_needed)
+    def compute_fabric_usage(self, quantity):
+        gfus = self.garmentfabricusage_set.all()
+        fabric_yards_used_tuples = []
+        for gfu in gfus:
+            fabric = gfu.fabric
+            yards_needed = gfu.yards_used * quantity
+            t = (fabric, yards_needed)
+            fabric_yards_used_tuples.append(t)
+
+        return fabric_yards_used_tuples
+
+    #def compute_fabric_usage(self, quantity):
+    #    return [(gfu.fabric, gfu.yards_used*quantity) for gfu in self.garmentfabricusage_set.all()]
+    
+    def __str__(self):
+        gfus = self.garmentfabricusage_set.all()
+        fabric_str_list = [str(gfu.fabric) for gfu in gfus]
+        comma_seperated_fabric_strs =  ', '.join(fabric_str_list)
+        return '(' + self.style +')' + ' ' + self.description + '-' + str(comma_seperated_fabric_strs)
+
+           
+class GarmentFabricUsage(models.Model):
+    garment = models.ForeignKey('Garment', null=True)
+    fabric = models.ForeignKey('Fabric', null=True)
+    yards_used = models.FloatField() 
+
+    def __str__(self):
+        return str(self.garment) + '-' + str(self.fabric)
+
+class GarmentProduction(models.Model):
+    garment = models.ForeignKey('Garment', null=True)
+    fabric = models.ForeignKey('Fabric', null=True)
+    date = models.DateField()
+    garments_made = models.IntegerField(default = 0)
+
+    def __str__(self):
+        return  str(self.garments_made) + ' ' + str(self.garment)
+
+
