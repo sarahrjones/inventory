@@ -13,10 +13,16 @@ class Fabric(models.Model):
         fabric_stock_infos = self.fabricstockinfo_set.all()
         for fabric_stock_info in fabric_stock_infos:
             fabric_bolts = fabric_stock_info.fabricbolt_set.all()
-
+            bolts_in_stock.extend(fabric_bolts)
+        return bolts_in_stock
             
     def compute_yards_used_instances(self, yards_used):
-        pass
+        bolts = self.get_bolts_in_stock()
+        total = 0
+        for bolt in bolts:
+           num_instances = bolt.compute_yards_used_instances(yards_used)
+           total = total + num_instances 
+        return total
     
     def __str__(self):
         return self.color + ' ' + self.name
@@ -46,9 +52,19 @@ class Garment(models.Model):
     style = models.CharField(max_length=10, default=0)
     description = models.CharField(max_length=100, default = 'description')
 
-    
+    #take a garment
+    #get the fabric(s) used to produce the garment
+    #determine the yards_used of each fabric
+    #divide yards_used_instances by yards_used
     def compute_number_producable(self):
-        pass
+        gfus = self.garmentfabricusage_set.all()
+        number_producable_list = []
+        for gfu in gfus:
+            fabric = gfu.fabric
+            yards_used = gfu.yards_used
+            number_producable = fabric.compute_yards_used_instances(yards_used)
+            number_producable_list.append(number_producable)
+        return min(number_producable_list)
     
     # how many garments are being made with what fabric(s)?  multiply
     # number of garments being made by GarmenetFabricUsage output: a
@@ -66,6 +82,8 @@ class Garment(models.Model):
 
     #def compute_fabric_usage(self, quantity):
     #    return [(gfu.fabric, gfu.yards_used*quantity) for gfu in self.garmentfabricusage_set.all()]
+    
+
     
     def __str__(self):
         gfus = self.garmentfabricusage_set.all()

@@ -4,23 +4,40 @@
   <title>Fabric stock update</title>
 
   <style>
-    #fabricTable th {
+    table th {
         text-align: left;
     }
-    #fabricTable td {
+    table td {
         padding-right: 20px;
     }
   </style>
 </head>
 
 <body>
-  <h1>Garment stock check</h1>
+  <h1>Fabric Stock Update</h1>
 
   <form action="/" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit" />
   </form>
+
+  <h1>Garments Producable</h1>
+
+  <table id="garmentTable">
+    <tr>
+      <th>Garment</th>
+      <th>Number Producable</th>
+    </tr>
+
+    {% for garment in garments %}
+    <tr>
+      <td> {{garment.description}} </td>
+      <td> {{garment.compute_number_producable}} </td>
+    </tr>
+    {% endfor %}
+    
+  </table>
   
   <h1> Fabric Inventory </h1>
 
@@ -28,15 +45,18 @@
     <tr>
       <th>Fabric</th>
       <th>Color</th>
-      <th>Yards in stock</th>
+      <th>Bolts</th>
     </tr>
     
-    {% for fsi in fabric_stock_infos %}
+    {% for fabric in fabrics %}
     <tr>
-      <td> {{ fsi.fabric.name }} </td>
-      <td>{{ fsi.fabric.color }}</td>
-      <td> {{ fsi.yards}}</td>
+      <td> {{ fabric.name }} </td>
+      <td>{{ fabric.color }}</td>
+      {% for bolt in fabric.get_bolts_in_stock  %}
+        <td>{{bolt.yards}}</td>
+      {% endfor %}	
     </tr>
+    
     {% endfor %}
     
   </table>

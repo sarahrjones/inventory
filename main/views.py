@@ -2,14 +2,22 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django import forms
 
-from models import FabricStockInfo, GarmentProduction, Garment
+from models import FabricStockInfo, GarmentProduction, Garment, Fabric,FabricBolt
 
-# Create your views here.
+
+#select a garment#
+#input quantity made#
+#select bolt(s) used#
+#compute number of yards used (instances?)#
+# display number of yards used on the screen#
+#submit to remove yards used quantity from the data base#
 
 class FabricStockUpdateForm(forms.Form):
     garment = forms.ModelChoiceField(queryset= Garment.objects.order_by("description"))
     quantity = forms.IntegerField(min_value=1)
-
+    bolts = forms.ModelMultipleChoiceField(queryset=FabricBolt.objects.all(), widget=forms.CheckboxSelectMultiple(), required=True)
+    yards_used = forms.IntegerField()
+    
 def fabric_stock_update(request):
     if request.method == 'POST':
         form = FabricStockUpdateForm(request.POST)
@@ -20,10 +28,14 @@ def fabric_stock_update(request):
     else:
         form = FabricStockUpdateForm()
         
-    fabric_stock_infos = FabricStockInfo.objects.all().order_by('fabric__name')
+    fabrics = Fabric.objects.all().order_by('name')
+    garments = Garment.objects.all().order_by('description')
+    
     return render(request, 'fabric_stock_update.html',
                   {
                       'form': form,
-                      'fabric_stock_infos': fabric_stock_infos
+                      'fabrics': fabrics,
+                      'garments': garments,
+                      
                   })
 
